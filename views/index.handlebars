@@ -1,0 +1,116 @@
+<head>
+<style>
+#chatForm input {
+	border: 1;
+	padding: 20px;
+	width: 80%;
+}
+#chatForm {
+	text-align: right;
+}
+
+#chatForm button {
+	width: 13%;
+	height: 60px;
+}
+#nameForm{
+	text-align: right;
+}
+</style>
+</head>
+
+
+
+<p id="nickError"></p>
+						<form action="" id="nameForm">
+							<p><b>Choose an alias</b></p>
+							<input type="text" id="nameTextField"> 
+							<input type="submit" class="btn" value="Enter chat">
+
+
+
+						</form>
+						
+
+
+	<ul id="messages"></ul>
+	<form action="" id="chatForm">
+		<input id="m" autocomplete="off" />
+		<button type="submit" class="btn btn-default">Submit</button>
+	</form>
+
+
+
+<!-- scripts -->
+	<script src="https://cdn.socket.io/socket.io-1.2.0.js"></script>
+	<!-- <script src="https://code.jquery.com/jquery-1.11.1.js"></script> -->
+	<script>
+	$(function() {
+		var socket = io();
+		var $nickError = $('#nickError');
+		var $users = $('users');
+		
+		
+		//Pop-up module
+		$(document).ready(function() {
+			$('#myModal').modal('show');
+
+		});
+		
+		
+
+		//Sends the username to terminal
+		$('#nameForm').submit(function(e) {
+			e.preventDefault();
+			socket.emit('new user', $('#nameTextField').val(), function(msg){
+			console.log("name goes through");
+				if(msg){
+					$('#myModal').modal('hide');
+				}else{
+					$nickError.html('Thats username is already taken!');
+					//alert("Username already in use, choose another one!");
+				}
+			});
+			console.log("so far so good");
+			$nameTextField.val('');
+		});
+			console.log("getting there");
+		socket.on('usernames', function(msg){
+			var html ='';
+			for(i=0; i < data.lenght; i++){
+				html += msg[i] + '<br/>'
+			}
+			console.log("bueno");
+			$users.html(html);
+		});	
+			
+		
+
+		//Sends the text to terminal
+		
+			$('#chatForm').submit(function(e) {
+				e.preventDefault();
+				socket.emit('send message', $('#m').val(), function(msg){
+					$('#messages').append($('<li>').text(msg));
+				});
+				$('#m').val('');
+				return false;
+			});
+
+			
+
+			//Recieves the text from terminal
+			socket.on('new message', function(msg) {
+				$('#messages').append($('<li>').text(msg));
+				window.scrollTo(0, document.body.scrollHeight);
+			});
+
+			//Recieves the user name from terminal
+			socket.on('registermsg', function(msg) {
+				$('#messages').append($('<li>').text(msg));
+				window.scrollTo(0, document.body.scrollHeight);
+			});
+			
+			
+		});
+	</script>
