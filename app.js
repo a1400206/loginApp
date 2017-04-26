@@ -105,8 +105,7 @@ server.listen(app.get('port'), function(){
 //var port = process.env.PORT || 3000;
 var users = {};
 
-d = new Date();
-d.toLocaleTimeString();
+d = new Date(new Date().getTime()).toLocaleTimeString();
 //
 //app.get('/', function(req, res) {
 //	res.sendFile(__dirname + '/index.html');
@@ -155,34 +154,35 @@ d.toLocaleTimeString();
 	socket.on('send message', function(msg, callback) {
 		console.log('sending message');
 		console.log('this is the name: ' + socket.name);
-//		//adding whisper function
-//		if(msg.substr(0,3) === '/w '){
-//			msg = msg.substr(3);
-//			var ind = msg.indexOf(' ');
-//			if(ind !== -1) {
-//				var name = msg.substring(0, ind);
-//				var msg = msg.substring(ind + 1);
-//				if(name in users){
-//					users[name].emit('whisper', {msg: msg, nick: socket.nameTextField});
-//					console.log('whisper');
-//					console.log(Object.keys(users));
-//					console.log('whisper', {msg: msg, nick: socket.nameTextField});
-//				}else{
-//					//when wrong username is inserter
-//					callback('Error! Enter a valid user.');
-//				}
-//				
-//			}else{
-//				//when no message is written
-//				callback('Error! Please enter a message.');
-//			}
-//			
-//		}else{
-//
+		//adding whisper function
+		if(msg.substr(0,3) === '/w '){
+			msg = msg.substr(3);
+			var ind = msg.indexOf(' ');
+			if(ind !== -1) {
+				var name = msg.substring(0, ind);
+				var msg = msg.substring(ind + 1);
+				if(name in users){
+					JSON.stringify({msg});
+					users[name].emit('whisper', d.toLocaleString() + ' ' + socket.nameTextField + " whispered to you: " + msg );
+					console.log('whisper');
+					console.log(Object.keys(users));
+					console.log('whisper', {msg: msg, nick: socket.nameTextField});
+				}else{
+					//when wrong username is inserter
+					callback('Error! Enter a valid user.');
+				}
+				
+			}else{
+				//when no message is written
+				callback('Error! Please enter a message.');
+			}
+			
+		}else{
+
 	console.log(d.toLocaleString());
 	io.sockets.emit('new message', d.toLocaleString() + ' ' + socket.name + ' said: ' + msg);
 	console.log(socket.name + ' said: ' + msg);
-//		}
+		}
 	});
 	
 });
